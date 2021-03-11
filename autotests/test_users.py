@@ -66,7 +66,7 @@ class TestUsers:
         asserts.json_has_key(response, 'firstname')
         asserts.json_has_key(response, 'lastname')
         asserts.json_has_key(response, 'id')
-        asserts.json_has_key(response, 'email')
+        asserts.json_has_no_key(response, 'password')
 
     def test_not_unique_email(self):
         data = {
@@ -83,4 +83,6 @@ class TestUsers:
         )
         asserts.elapsed_time(response, 1)
         asserts.status_code(response, 400)
+
+
 

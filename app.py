@@ -64,6 +64,7 @@ def post_user():
                                       gender=gender,
                                       email=email,
                                       password=password)
+                    print(id)
                     dic = sql.user_get(user=id)
                     data = {
                         'id': dic[0],
@@ -84,27 +85,29 @@ def post_user():
                 id = request.json.get('id')
                 email = request.json.get('email')
                 password = request.json.get('password')
-                if email in (None, "") \
-                        or password in (None, "") \
-                        or fname in (None, "") \
-                        or lname in (None, "") \
-                        or gender in (None, "") \
-                        or gender not in ("F", "M"):
-                    return errors.error_param()
+                if bool(sql.unique_email(email)) is True:
+                    return errors.unique_email()
                 else:
-                    sql.update_user(id=id, fname=fname,
-                                    lname=lname,
-                                    gender=gender)
-                dic = sql.user_get(user=id)
-                data = {
-                    'id': dic[0],
-                    'firstname': dic[1],
-                    'lastname': dic[2],
-                    'gender': dic[3],
-                    'email': dic[4],
-                    'password': dic[5]
-                }
-                return jsonify(data)
+                    if email in (None, "") \
+                            or password in (None, "") \
+                            or fname in (None, "") \
+                            or lname in (None, "") \
+                            or gender in (None, "") \
+                            or gender not in ("F", "M"):
+                        return errors.error_param()
+                    else:
+                        sql.update_user(id=id, fname=fname,
+                                        lname=lname,
+                                        gender=gender,email=email)
+                    dic = sql.user_get(user=id)
+                    data = {
+                        'id': dic[0],
+                        'firstname': dic[1],
+                        'lastname': dic[2],
+                        'gender': dic[3],
+                        'email': dic[4]
+                    }
+                    return jsonify(data)
 
 
 @app.route('/users', methods=['GET'])
