@@ -70,11 +70,11 @@ class TestUsers:
 
     def test_not_unique_email(self):
         data = {
-            'firstname': 'John',
+            'firstname': 'Jon',
             'lastname': 'Snow',
             'gender': 'M',
-            'email': 'test@test.ru',
-            'password': '54698nmfy4y£4734'
+            'email': 'winter@is.coming',
+            'password': 'king of the night'
         }
         response = requests.post(
             url + 'user',

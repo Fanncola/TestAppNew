@@ -17,64 +17,66 @@ class Sql:
     @staticmethod
     def user_get(user):
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute("select userid,fname,lname,gender,email,password FROM users where userid = ?",
+        cur = conn.cursor()
+        cur.execute("select id,fname,lname,gender,email,password FROM users where id = ?",
                        (user,))
-        return cursor.fetchone()
+        return cur.fetchone()
 
     @staticmethod
     def unique_email(email):
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute("select email from users where email = ?", (email,))
-        return cursor.fetchall()
+        cur = conn.cursor()
+        cur.execute("select email from users where email = ?", (email,))
+        return cur.fetchall()
 
 
     @staticmethod
     def users(order, sort, limit):
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute(f"select userid, fname, lname, gender, email, password from users "
+        cur = conn.cursor()
+        cur.execute(f"select id, fname, lname, gender, email, password from users "
                        f"order by {order} {sort} limit {limit}")
-        return cursor.fetchall()
+        return cur.fetchall()
 
 
     @staticmethod
-    def user_post(userid, fname, lname, gender, email, password):
+    def user_post(fname, lname, gender, email, password):
         conn = sqlite3.connect('orders.db')
-        conn.execute("insert into users values (?,?,?,?,?,?);",
-                     (userid, fname, lname, gender, email, password))
+        cur = conn.cursor()
+        cur.execute("insert into users(fname, lname, gender, email, password) values (?,?,?,?,?);",
+                     (fname, lname, gender, email, password))
         conn.commit()
-        return json.dumps(Sql.last_id())
+        return json.dumps(cur.lastrowid)
 
     @staticmethod
     def last_id():
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute("select * from users order by userid desc limit ?;",
+        cur = conn.cursor()
+        cur.execute("select * from users order by id desc limit ?;",
                        (1,))
-        return cursor.fetchone()
+        return json.dumps(cur.lastrowid)
 
     @staticmethod
     def authority(header):
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute("select count(*) from applicationapikeys where apikey = ?",
+        cur = conn.cursor()
+        cur.execute("select count(*) from applicationapikeys where apikey = ?",
                        (header,))
-        return cursor.fetchone()[0]
+        return cur.fetchone()[0]
 
 
     @staticmethod
     def all_posts():
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
-        cursor.execute("select * from posts")
+        cur = conn.cursor()
+        cur.execute("select * from posts")
         return cursor.fetchall()
 
     @staticmethod
     def add_post(id, text, user, datetime, status):
         conn = sqlite3.connect('orders.db')
-        conn.execute("insert into posts values (?,?,?,?,?)",
+        cur = conn.cursor()
+        cur.execute("insert into posts values (?,?,?,?,?)",
                      (id, text, user, datetime, status))
         conn.commit()
         return json.dumps(Sql.last_id_post())
@@ -82,16 +84,17 @@ class Sql:
     @staticmethod
     def last_id_post():
         conn = sqlite3.connect('orders.db')
-        cursor = conn.cursor()
+        cur = conn.cursor()
         sql = f'select * from posts order by id desc limit 1'
-        cursor.execute(sql)
-        return cursor.fetchone()
+        cur.execute(sql)
+        return cur.fetchone()
 
     @staticmethod
-    def update_user(userid,fname, lname, gender):
+    def update_user(id,fname, lname, gender):
         conn = sqlite3.connect('orders.db')
-        conn.execute("update users set fname = ?, lname = ?, gender = ? where userid = ?;",
-                     (fname, lname, gender, userid))
+        cur = conn.cursor()
+        cur.execute("update users set fname = ?, lname = ?, gender = ? where id = ?;",
+                     (fname, lname, gender, id))
         conn.commit()
-        return json.dumps(Sql.user_get(userid))
+        return json.dumps(Sql.user_get(id))
 

@@ -41,8 +41,6 @@ def post_user():
         return s, 401
     else:
         if request.method == 'POST':
-            userid = sql.last_id()[0]
-            userid += 1
             fname = request.json.get('firstname')
             lname = request.json.get('lastname')
             gender = request.json.get('gender')
@@ -61,10 +59,12 @@ def post_user():
                         or gender not in ("F", "M"):
                     return errors.error_param()
                 else:
-                    sql.user_post(userid=userid, fname=fname,
-                                  lname=lname,
-                                  gender=gender,email=email,password=password)
-                    dic = sql.user_get(user=userid)
+                    id = sql.user_post(fname=fname,
+                                      lname=lname,
+                                      gender=gender,
+                                      email=email,
+                                      password=password)
+                    dic = sql.user_get(user=id)
                     data = {
                         'id': dic[0],
                         'firstname': dic[1],
@@ -77,13 +77,11 @@ def post_user():
             if s['error'] is not None:
                 return s, 401
             else:
-                userid = sql.last_id()[0]
-                userid += 1
                 fname = request.json.get('firstname')
                 lname = request.json.get('lastname')
                 gender = request.json.get('gender')
                 gender = gender.upper()
-                userid = request.json.get('id')
+                id = request.json.get('id')
                 email = request.json.get('email')
                 password = request.json.get('password')
                 if email in (None, "") \
@@ -94,10 +92,10 @@ def post_user():
                         or gender not in ("F", "M"):
                     return errors.error_param()
                 else:
-                    sql.update_user(userid=userid, fname=fname,
+                    sql.update_user(id=id, fname=fname,
                                     lname=lname,
                                     gender=gender)
-                dic = sql.user_get(user=userid)
+                dic = sql.user_get(user=id)
                 data = {
                     'id': dic[0],
                     'firstname': dic[1],
@@ -113,7 +111,7 @@ def post_user():
 def get_users():
     header = request.headers.get('api-key')
     limit = request.args.get('limit', default=10, type=int)
-    order = request.args.get('order', default='userid', type=str)
+    order = request.args.get('order', default='id', type=str)
     sort = request.args.get('sort', default='desc', type=str)
     s = auth.auth(header=header)
     if s['error'] is not None:
@@ -178,6 +176,7 @@ def all_posts():
             }
             posts.append(data)
         return jsonify(posts)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port='8888')
