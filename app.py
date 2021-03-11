@@ -41,13 +41,12 @@ def post_user():
         return s, 401
     else:
         if request.method == 'POST':
-            fname = request.json.get('firstname')
-            lname = request.json.get('lastname')
-            gender = request.json.get('gender')
+            fname, lname, gender, email, password = request.json.get('firstname'), \
+                                   request.json.get('lastname'),\
+                                   request.json.get('gender'), \
+                                   request.json.get('email'),\
+                                   request.json.get('password')
             gender = gender.upper()
-            email = request.json.get('email')
-            email = email.lower()
-            password = request.json.get('password')
             if bool(sql.unique_email(email)) is True:
                 return errors.unique_email()
             else:
@@ -60,10 +59,10 @@ def post_user():
                     return errors.error_param()
                 else:
                     id = sql.user_post(fname=fname,
-                                      lname=lname,
-                                      gender=gender,
-                                      email=email,
-                                      password=password)
+                                       lname=lname,
+                                       gender=gender,
+                                       email=email,
+                                       password=password)
                     dic = sql.user_get(user=id)
                     data = {
                         'id': dic[0],
@@ -77,19 +76,19 @@ def post_user():
             if s['error'] is not None:
                 return s, 401
             else:
-                fname = request.json.get('firstname')
-                lname = request.json.get('lastname')
-                gender = request.json.get('gender')
+                fname, lname, gender, email, password,id = request.json.get('firstname'), \
+                                                        request.json.get('lastname'), \
+                                                        request.json.get('gender'), \
+                                                        request.json.get('email'), \
+                                                        request.json.get('password'), \
+                                                        request.json.get('id')
                 gender = gender.upper()
-                id = request.json.get('id')
                 if id is None:
                     return errors.some_error()
                 else:
                     if sql.user_get(id) is None:
                         return errors.some_error()
                     else:
-                        email = request.json.get('email')
-                        password = request.json.get('password')
                         if bool(sql.unique_email(email)) is True:
                             return errors.unique_email()
                         else:

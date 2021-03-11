@@ -74,7 +74,8 @@ class TestUsers:
             'lastname': 'Snow',
             'gender': 'M',
             'email': 'winter@is.coming',
-            'password': 'king of the night'
+            'password': 'king of the night',
+            'createdate': '01.01.1970'
         }
         response = requests.post(
             url + 'user',

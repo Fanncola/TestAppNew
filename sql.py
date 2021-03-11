@@ -7,18 +7,18 @@ errors = Errors
 class Sql:
     def __init__(self):
         pass
-        self.conn = sqlite3.connect('orders.db')
+        self.conn = sqlite3.connect('blog.db')
 
     @staticmethod
     def all_sql(userid, limit, order, sort, sql, table):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cursor = conn.cursor()
         if sql == 'SELECT':
             sql = f'{sql} '
 
     @staticmethod
     def user_get(user):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         sql = f"select id,fname,lname,gender,email,password FROM users where id = {user}"
         cur.execute(sql)
@@ -26,7 +26,7 @@ class Sql:
 
     @staticmethod
     def unique_email(email):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         sql = f"select email from users where email = '{email}'"
         cur.execute(sql)
@@ -35,7 +35,7 @@ class Sql:
 
     @staticmethod
     def users(order, sort, limit):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         cur.execute(f"select id, fname, lname, gender, email, password from users "
                        f"order by {order} {sort} limit {limit}")
@@ -44,7 +44,7 @@ class Sql:
 
     @staticmethod
     def user_post(fname, lname, gender, email, password):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         sql = f"insert into users(fname, lname, gender, email, password) "\
               f"values ('{fname}','{lname}','{gender}','{email}','{password}');"
@@ -54,7 +54,7 @@ class Sql:
 
     @staticmethod
     def last_id():
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         cur.execute("select id from users order by id desc limit ?;",
                        (1,))
@@ -62,7 +62,7 @@ class Sql:
 
     @staticmethod
     def authority(header):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         cur.execute("select count(*) from applicationapikeys where apikey = ?",
                        (header,))
@@ -71,14 +71,14 @@ class Sql:
 
     @staticmethod
     def all_posts():
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         cur.execute("select * from posts")
         return cur.fetchall()
 
     @staticmethod
     def add_post(id, text, user, datetime, status):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         cur.execute("insert into posts values (?,?,?,?,?)",
                      (id, text, user, datetime, status))
@@ -87,7 +87,7 @@ class Sql:
 
     @staticmethod
     def last_id_post():
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         sql = f'select * from posts order by id desc limit 1'
         cur.execute(sql)
@@ -95,7 +95,7 @@ class Sql:
 
     @staticmethod
     def update_user(id, fname, lname, gender, email):
-        conn = sqlite3.connect('orders.db')
+        conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
         sql = f"update users set fname = '{fname}', lname = '{lname}', " \
               f"gender = '{gender}', email='{email}' where id = {id};"

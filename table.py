@@ -1,5 +1,5 @@
 import sqlite3
-conn = sqlite3.connect('orders.db')
+conn = sqlite3.connect('blog.db')
 cur = conn.cursor()
 cur.executescript("""
 CREATE TABLE IF NOT EXISTS users (
