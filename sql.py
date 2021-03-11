@@ -1,5 +1,8 @@
 import sqlite3
 import json
+from errors import Errors
+errors = Errors
+
 
 class Sql:
     def __init__(self):
@@ -91,12 +94,11 @@ class Sql:
         return cur.fetchone()
 
     @staticmethod
-    def update_user(id,fname, lname, gender,email):
+    def update_user(id, fname, lname, gender, email):
         conn = sqlite3.connect('orders.db')
         cur = conn.cursor()
         sql = f"update users set fname = '{fname}', lname = '{lname}', " \
               f"gender = '{gender}', email='{email}' where id = {id};"
-        print(sql)
         cur.execute(sql)
         conn.commit()
         return json.dumps(Sql.user_get(id))
