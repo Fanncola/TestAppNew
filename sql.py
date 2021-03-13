@@ -36,8 +36,6 @@ class Sql:
     def users(order, sort, limit):
         conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
-        # if order == 'userid':
-        #     order = 'id'
         sql = f"select {order}, fname, lname, gender, email, password, createdate from users " \
               f"order by {order} {sort} limit {limit}"
         print(sql)
