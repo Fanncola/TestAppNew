@@ -27,7 +27,7 @@ class Asserts:
             return f'Request is None'
 
     @staticmethod
-    def json_has_key(response, key: int, message: str= ""):
+    def json_has_key(response, key: str, message: str= ""):
         try:
             response_as_dict = response.json()
         except json.decoder.JSONDecodeError:
@@ -37,7 +37,7 @@ class Asserts:
             f'Response json does not have a key "{key}" which is expected. JSON text: "{response.text}"'
 
     @staticmethod
-    def json_has_no_key(response, key: int, message: str = ""):
+    def json_has_no_key(response, key: str, message: str = ""):
         try:
             response_as_dict = response.json()
         except json.decoder.JSONDecodeError:

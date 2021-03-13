@@ -20,7 +20,7 @@ class Sql:
     def user_get(user):
         conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
-        sql = f"select id,fname,lname,gender,email,password FROM users where id = {user}"
+        sql = f"select id,fname,lname,gender,email,password,createdate FROM users where id = {user}"
         cur.execute(sql)
         return cur.fetchone()
 
@@ -32,22 +32,24 @@ class Sql:
         cur.execute(sql)
         return cur.fetchall()
 
-
     @staticmethod
     def users(order, sort, limit):
         conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
-        cur.execute(f"select id, fname, lname, gender, email, password from users "
-                       f"order by {order} {sort} limit {limit}")
+        # if order == 'userid':
+        #     order = 'id'
+        sql = f"select {order}, fname, lname, gender, email, password, createdate from users " \
+              f"order by {order} {sort} limit {limit}"
+        print(sql)
+        cur.execute(sql)
         return cur.fetchall()
 
-
     @staticmethod
-    def user_post(fname, lname, gender, email, password):
+    def user_post(fname, lname, gender, email, password, createdate):
         conn = sqlite3.connect('blog.db')
         cur = conn.cursor()
-        sql = f"insert into users(fname, lname, gender, email, password) "\
-              f"values ('{fname}','{lname}','{gender}','{email}','{password}');"
+        sql = f"insert into users(fname, lname, gender, email, password, createdate) "\
+              f"values ('{fname}','{lname}','{gender}','{email}','{password}', '{createdate}');"
         conn.execute(sql)
         conn.commit()
         return Sql.last_id()

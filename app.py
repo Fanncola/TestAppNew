@@ -14,23 +14,27 @@ auth = Auth
 def get_user():
     header = request.headers.get('api-key')
     s = auth.auth(header=header)
-    param = int(request.args.get('id'))
+    param = request.args.get('id')
     if s['error'] is not None:
         return s, 401
     else:
-        if param not in (None, ""):
-            dic = sql.user_get(user=param)
-            data = {
-                'id': dic[0],
-                'firstname': dic[1],
-                'lastname': dic[2],
-                'gender': dic[3],
-                'email': dic[4],
-                'password': dic[5]
-            }
-            return jsonify(data)
+        if int(param):
+            if param not in (None, ""):
+                dic = sql.user_get(user=param)
+                data = {
+                    'id': dic[0],
+                    'firstname': dic[1],
+                    'lastname': dic[2],
+                    'gender': dic[3],
+                    'email': dic[4],
+                    'password': dic[5],
+                    'createdate': dic[6]
+                }
+                return jsonify(data)
+            else:
+                return errors.error_param()
         else:
-            return errors.error_param()
+            return errors.some_error()
 
 
 @app.route('/user', methods=['POST', 'PUT'])
@@ -41,11 +45,13 @@ def post_user():
         return s, 401
     else:
         if request.method == 'POST':
-            fname, lname, gender, email, password = request.json.get('firstname'), \
-                                   request.json.get('lastname'),\
-                                   request.json.get('gender'), \
-                                   request.json.get('email'),\
-                                   request.json.get('password')
+            fname, lname, gender, email, password, createdate = \
+                request.json.get('firstname'), \
+                request.json.get('lastname'),\
+                request.json.get('gender'), \
+                request.json.get('email'),\
+                request.json.get('password'),\
+                request.json.get('createdate')
             gender = gender.upper()
             if bool(sql.unique_email(email)) is True:
                 return errors.unique_email()
@@ -54,6 +60,7 @@ def post_user():
                         or password in (None, "") \
                         or fname in (None, "")\
                         or lname in (None, "")\
+                        or createdate in (None, "")\
                         or gender in (None, "")\
                         or gender not in ("F", "M"):
                     return errors.error_param()
@@ -62,21 +69,23 @@ def post_user():
                                        lname=lname,
                                        gender=gender,
                                        email=email,
-                                       password=password)
+                                       password=password,
+                                       createdate=createdate)
                     dic = sql.user_get(user=id)
                     data = {
                         'id': dic[0],
                         'firstname': dic[1],
                         'lastname': dic[2],
                         'gender': dic[3],
-                        'email': dic[4]
+                        'email': dic[4],
+                        'createdate': dic[6]
                     }
                     return jsonify(data)
         if request.method == 'PUT':
             if s['error'] is not None:
                 return s, 401
             else:
-                fname, lname, gender, email, password,id = request.json.get('firstname'), \
+                fname, lname, gender, email, password, id = request.json.get('firstname'), \
                                                         request.json.get('lastname'), \
                                                         request.json.get('gender'), \
                                                         request.json.get('email'), \
@@ -102,7 +111,7 @@ def post_user():
                             else:
                                 sql.update_user(id=id, fname=fname,
                                                 lname=lname,
-                                                gender=gender,email=email)
+                                                gender=gender, email=email)
                             dic = sql.user_get(user=id)
                             data = {
                                 'id': dic[0],
@@ -118,6 +127,7 @@ def post_user():
 def get_users():
     header = request.headers.get('api-key')
     limit = request.args.get('limit', default=10, type=int)
+
     order = request.args.get('order', default='id', type=str)
     sort = request.args.get('sort', default='desc', type=str)
     s = auth.auth(header=header)
@@ -133,7 +143,7 @@ def get_users():
                 'lastname': i[2],
                 'gender': i[3],
                 'email': i[4],
-                'password': i[5]
+                'createdate': i[6]
             }
             users.append(data)
         return jsonify(users)
@@ -149,10 +159,10 @@ def create_post():
         postid = sql.last_id_post()[0]
         postid += 1
         text = request.json.get('text')
-        datatime = request.json.get('datetime')
+        datetime = request.json.get('datetime')
         status = request.json.get('status')
         user = request.json.get('user')
-        sql.add_post(id=postid,text=text,user=user,datetime=datatime,status=status)
+        sql.add_post(id=postid, text=text, user=user, datetime=datetime, status=status)
         dic = sql.last_id_post()
         data = {
             "id": dic[0],
